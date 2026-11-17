@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="product_template_form_view_carabinero" model="ir.ui.view">
+        <field name="name">product.template.form.carabinero</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="point_of_sale.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='available_in_pos']" position="after">
+                <field name="carabinero_public_sale" invisible="not available_in_pos"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="product_template_tree_view_carabinero" model="ir.ui.view">
+        <field name="name">product.template.tree.carabinero</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_tree_view"/>
+        <field name="arch" type="xml">
+            <field name="categ_id" position="before">
+                <field name="carabinero_public_sale" optional="show"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="product_template_search_view_carabinero" model="ir.ui.view">
+        <field name="name">product.template.search.carabinero</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_search_view"/>
+        <field name="arch" type="xml">
+            <filter name="filter_to_sell" position="before">
+                <filter name="filter_carabinero_public" string="Aptos para público general"
+                        domain="[('carabinero_public_sale', '=', True)]"/>
+                <filter name="filter_carabinero_only" string="Solo Carabineros"
+                        domain="[('carabinero_public_sale', '=', False)]"/>
+                <separator/>
+            </filter>
+        </field>
+    </record>
+</odoo>

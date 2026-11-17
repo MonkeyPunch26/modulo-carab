@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_carabinero_reject_wizard_form" model="ir.ui.view">
+        <field name="name">dros.carabinero.reject.wizard.form</field>
+        <field name="model">dros.carabinero.reject.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Rechazar o revocar inscripción">
+                <group>
+                    <field name="partner_ids" widget="many2many_tags" readonly="1"/>
+                    <field name="reason" placeholder="Ej.: ya no pertenece a la institución"/>
+                </group>
+                <footer>
+                    <button name="action_confirm" type="object" string="Rechazar / revocar" class="btn-danger"/>
+                    <button string="Cancelar" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

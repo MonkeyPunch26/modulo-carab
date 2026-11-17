@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="dros_carabineros.ActionpadWidget" t-inherit="point_of_sale.ActionpadWidget" t-inherit-mode="extension">
+        <xpath expr="//button[hasclass('set-partner')]/div" position="inside">
+            <i t-if="carabinero" class="fa fa-lg ms-2 carabinero-badge"
+               t-att-class="carabinero.active ? 'fa-check-circle text-success' : 'fa-exclamation-circle text-danger'"
+               t-att-title="carabinero.label" role="img" t-att-aria-label="carabinero.label"/>
+        </xpath>
+    </t>
+
+</templates>

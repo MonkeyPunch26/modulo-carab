@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_carabinero" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.carabinero</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="point_of_sale.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//block[@id='pos_interface_section']" position="before">
+                <block title="Carabineros" id="pos_carabineros_section">
+                    <setting string="Aplicar regla de Carabineros" id="pos_carabinero_required_setting"
+                             help="Los productos no marcados como aptos para público general solo se venden a Carabineros activos. Las devoluciones no se bloquean.">
+                        <field name="pos_carabinero_required"/>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>

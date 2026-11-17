@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="dros_carabineros.PartnerDetailsEdit" t-inherit="point_of_sale.PartnerDetailsEdit" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('partner-details-box')]" position="inside">
+            <t t-if="carabineroEnabled">
+                <div class="col-12 border-top pt-3 mt-2 carabinero-section">
+                    <div class="d-flex align-items-center gap-3 flex-wrap">
+                        <h5 class="m-0">Carabineros</h5>
+                        <span class="badge fs-6" t-att-class="carabinero.cssClass" t-esc="carabinero.label"/>
+                    </div>
+                </div>
+                <div class="partner-detail col">
+                    <label class="form-label label" for="carabinero_email">Correo institucional</label>
+                    <input class="detail form-control" id="carabinero_email" name="carabinero_email"
+                           t-model="changes.carabinero_email" placeholder="nombre@carabineros.cl"/>
+                </div>
+                <div class="partner-detail col">
+                    <label class="form-label label" for="carabinero_rank">Grado</label>
+                    <input class="detail form-control" id="carabinero_rank" name="carabinero_rank"
+                           t-model="changes.carabinero_rank" placeholder="Grado"/>
+                </div>
+                <div class="partner-detail col">
+                    <label class="form-label label" for="carabinero_unit">Unidad / destacamento</label>
+                    <input class="detail form-control" id="carabinero_unit" name="carabinero_unit"
+                           t-model="changes.carabinero_unit" placeholder="Unidad"/>
+                </div>
+                <div class="col-12" t-if="canRequestCarabinero">
+                    <button type="button" class="btn btn-lg btn-primary request-carabinero-button" t-on-click="requestCarabinero">
+                        <t t-esc="requestCarabineroLabel"/>
+                    </button>
+                    <div class="text-muted mt-2">
+                        El RUT va en el campo Tax ID. El encargado debe aprobar la solicitud antes de poder vender.
+                    </div>
+                </div>
+            </t>
+        </xpath>
+    </t>
+
+</templates>

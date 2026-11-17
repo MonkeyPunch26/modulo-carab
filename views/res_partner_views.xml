@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Pestaña informativa en la ficha normal de cualquier contacto (solo lectura del estado) -->
+    <record id="view_partner_form_carabinero_tab" model="ir.ui.view">
+        <field name="name">res.partner.form.carabinero.tab</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='sales_purchases']" position="after">
+                <page string="Carabineros" name="carabineros">
+                    <group>
+                        <group>
+                            <field name="carabinero_state" readonly="1"/>
+                            <field name="carabinero_valid_until" readonly="1"/>
+                            <field name="carabinero_is_active" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="carabinero_email"/>
+                            <field name="carabinero_rank"/>
+                            <field name="carabinero_unit"/>
+                        </group>
+                    </group>
+                    <p class="text-muted">
+                        Para solicitar, aprobar o renovar la inscripción usa el menú Punto de Venta &gt; Carabineros.
+                    </p>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Vista de trabajo de Carabineros: lista -->
+    <record id="view_partner_carabinero_tree" model="ir.ui.view">
+        <field name="name">res.partner.carabinero.tree</field>
+        <field name="model">res.partner</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <tree string="Clientes Carabineros"
+                  decoration-success="carabinero_is_active"
+                  decoration-warning="carabinero_state == 'pending'"
+                  decoration-danger="carabinero_state in ('expired', 'rejected')"
+                  default_order="carabinero_requested_on desc, name">
+                <field name="name"/>
+                <field name="vat" string="RUT"/>
+                <field name="carabinero_rank" optional="show"/>
+                <field name="carabinero_unit" optional="show"/>
+                <field name="carabinero_state"/>
+                <field name="carabinero_valid_until"/>
+                <field name="carabinero_requested_by" optional="show"/>
+                <field name="carabinero_requested_on" optional="show"/>
+                <field name="carabinero_is_active" column_invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vista de trabajo de Carabineros: ficha -->
+    <record id="view_partner_carabinero_form" model="ir.ui.view">
+        <field name="name">res.partner.carabinero.form</field>
+        <field name="model">res.partner</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <form string="Cliente Carabinero">
+                <header>
+                    <button name="action_carabinero_request" type="object" string="Solicitar inscripción"
+                            class="btn-primary"
+                            invisible="carabinero_state not in ('none', 'rejected')"/>
+                    <button name="action_carabinero_request" type="object" string="Solicitar renovación"
+                            class="btn-primary"
+                            invisible="carabinero_state != 'expired'"/>
+                    <button name="action_carabinero_approve" type="object" string="Aprobar"
+                            class="btn-primary"
+                            groups="dros_carabineros.group_carabinero_aprobador"
+                            invisible="carabinero_state != 'pending'"/>
+                    <button name="action_carabinero_approve" type="object" string="Activar / renovar"
+                            groups="dros_carabineros.group_carabinero_aprobador"
+                            invisible="carabinero_state == 'pending'"/>
+                    <button name="action_carabinero_open_reject_wizard" type="object" string="Rechazar / revocar"
+                            groups="dros_carabineros.group_carabinero_aprobador"
+                            invisible="carabinero_state not in ('pending', 'active', 'expired')"/>
+                    <field name="carabinero_state" widget="statusbar"
+                           statusbar_visible="none,pending,active,expired"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="Nombre completo"/></h1>
+                    </div>
+                    <group>
+                        <group string="Datos del cliente">
+                            <field name="vat" string="RUT" placeholder="12.345.678-5"/>
+                            <field name="phone"/>
+                            <field name="mobile"/>
+                            <field name="email"/>
+                        </group>
+                        <group string="Datos institucionales">
+                            <field name="carabinero_email"/>
+                            <field name="carabinero_rank"/>
+                            <field name="carabinero_unit"/>
+                        </group>
+                    </group>
+                    <group string="Inscripción">
+                        <group>
+                            <field name="carabinero_valid_until" readonly="1"/>
+                            <field name="carabinero_is_active" readonly="1"/>
+                            <field name="carabinero_reject_reason" readonly="1"
+                                   invisible="not carabinero_reject_reason"/>
+                        </group>
+                        <group>
+                            <field name="carabinero_requested_by"/>
+                            <field name="carabinero_requested_on"/>
+                            <field name="carabinero_resolved_by"/>
+                            <field name="carabinero_resolved_on"/>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_partner_carabinero_search" model="ir.ui.view">
+        <field name="name">res.partner.carabinero.search</field>
+        <field name="model">res.partner</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <search string="Clientes Carabineros">
+                <field name="name" string="Nombre / RUT / correo"
+                       filter_domain="['|', '|', ('name', 'ilike', self), ('vat', 'ilike', self), ('carabinero_email', 'ilike', self)]"/>
+                <filter name="pending" string="Pendientes de aprobación"
+                        domain="[('carabinero_state', '=', 'pending')]"/>
+                <filter name="active_today" string="Activos"
+                        domain="[('carabinero_is_active', '=', True)]"/>
+                <filter name="inactive" string="Inactivos (vencidos)"
+                        domain="['|', ('carabinero_state', '=', 'expired'), '&amp;', ('carabinero_state', '=', 'active'), ('carabinero_is_active', '=', False)]"/>
+                <filter name="rejected" string="Rechazados"
+                        domain="[('carabinero_state', '=', 'rejected')]"/>
+                <group expand="0" string="Agrupar por">
+                    <filter name="group_state" string="Estado" context="{'group_by': 'carabinero_state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_carabineros" model="ir.actions.act_window">
+        <field name="name">Clientes Carabineros</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('carabinero_state', '!=', 'none')]</field>
+        <field name="context">{'search_default_pending': 1}</field>
+        <field name="search_view_id" ref="view_partner_carabinero_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No hay clientes en esta vista</p>
+            <p>Aquí aparecen los clientes Carabineros que ya pidieron inscripción. Quita el filtro
+               para ver a todos, o crea uno nuevo con el botón Nuevo.</p>
+        </field>
+    </record>
+
+    <record id="action_carabineros_tree" model="ir.actions.act_window.view">
+        <field name="sequence">1</field>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="view_partner_carabinero_tree"/>
+        <field name="act_window_id" ref="action_carabineros"/>
+    </record>
+
+    <record id="action_carabineros_form" model="ir.actions.act_window.view">
+        <field name="sequence">2</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_partner_carabinero_form"/>
+        <field name="act_window_id" ref="action_carabineros"/>
+    </record>
+
+    <menuitem id="menu_carabineros" name="Carabineros"
+              parent="point_of_sale.menu_point_root"
+              action="action_carabineros"
+              sequence="25"
+              groups="point_of_sale.group_pos_user"/>
+</odoo>
